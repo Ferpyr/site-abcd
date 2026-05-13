@@ -3,306 +3,660 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alfabeto Interativo</title>
+    <title>Aplicativo do Alfabeto</title>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { min-height: 100vh; font-family: 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #061126 0%, #122b5e 100%); color: #ffffff; overflow-x: hidden; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        /* Sistema de Telas */
-        .tela { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; width: 100%; text-align: center; animation: fadeIn 0.4s ease-in-out; padding: 20px; }
+        /* Coloquei overflow-y auto para se a tela for pequena, você poder rolar o menu para baixo e ver os novos botões */
+        body, html {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #061126 0%, #122b5e 100%);
+            color: #ffffff;
+            overflow-x: hidden; 
+        }
+
+        .tela {
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.4s ease-in-out;
+            transition: background-color 0.2s ease;
+            padding: 20px 0;
+        }
+
         .tela.ativa { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        h1 { font-size: 3.5rem; color: #4facfe; margin-bottom: 10px; text-shadow: 0 0 15px rgba(79, 172, 254, 0.4); }
-        h2 { font-size: 2.2rem; color: #4facfe; margin-bottom: 20px; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
-        /* Botões Estilizados */
-        .btn-menu { background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(79, 172, 254, 0.5); color: white; font-size: 1.1rem; padding: 15px 25px; margin: 8px; border-radius: 30px; cursor: pointer; width: 340px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-menu:hover:not(.bloqueado) { background: rgba(79, 172, 254, 0.3); transform: translateY(-3px); }
-        .btn-menu.bloqueado { background: rgba(0, 0, 0, 0.3); border-color: rgba(255,255,255,0.1); color: #666; cursor: not-allowed; }
-        .btn-voltar { position: absolute; top: 20px; left: 20px; background: rgba(255, 255, 255, 0.1); border: none; color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; z-index: 100; }
+        h1, h2 {
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #4facfe;
+            text-shadow: 0px 4px 15px rgba(79, 172, 254, 0.4);
+            margin-bottom: 20px;
+        }
 
-        /* Visor de Fotos */
-        .foto-principal { max-width: 80vw; max-height: 50vh; border-radius: 20px; border: 4px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.5); cursor: pointer; transition: 0.3s; }
-        #textoLetra { font-size: 1.5rem; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 5px 20px; border-radius: 20px; }
-        select { padding: 10px; border-radius: 10px; background: #061126; color: white; border: 1px solid #4facfe; margin-bottom: 15px; font-size: 1rem; }
+        h1 { font-size: 3.5rem; }
+        h2 { font-size: 2.5rem; margin-top: 20px; }
 
-        /* Piano */
-        .piano-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; width: 90vw; max-width: 800px; max-height: 70vh; overflow-y: auto; padding: 10px; }
-        .img-piano { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.2s; }
-        .img-piano:hover { transform: scale(1.1); border-color: #4facfe; }
+        .btn-menu {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(79, 172, 254, 0.5);
+            color: white;
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            margin: 8px;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 350px;
+            transition: all 0.3s ease;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
 
-        /* Quiz */
+        .btn-menu:hover:not(.bloqueado) {
+            background: rgba(79, 172, 254, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0px 12px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-menu.bloqueado {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-voltar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .btn-voltar:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* ================= TELAS VISUALIZADOR ================= */
+        p#textoLetra { font-size: 1.2rem; color: #a0aec0; margin-bottom: 15px; letter-spacing: 2px; background: rgba(255, 255, 255, 0.05); padding: 5px 15px; border-radius: 20px; }
+        select { margin-bottom: 20px; padding: 10px 20px; font-size: 1.2rem; border-radius: 10px; background: rgba(0, 0, 0, 0.3); color: white; border: 1px solid rgba(79, 172, 254, 0.5); cursor: pointer; display: none; }
+        select option { background: #122b5e; color: white; }
+
+        img.foto-principal { max-width: 85vw; max-height: 50vh; object-fit: cover; border-radius: 16px; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.6), 0px 0px 20px rgba(79, 172, 254, 0.2); cursor: pointer; transition: transform 0.3s ease, opacity 0.3s ease; }
+        img.foto-principal:hover { transform: scale(1.03) translateY(-5px); }
+        img.foto-principal:active { transform: scale(0.98); }
+
+        /* ================= MODO PIANO ================= */
+        .piano-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 12px; width: 90vw; max-width: 800px; margin-top: 15px; padding: 10px; }
+        .img-piano { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; border: 3px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: all 0.2s ease; box-shadow: 0px 5px 15px rgba(0,0,0,0.4); }
+        .img-piano:hover { border-color: #4facfe; transform: scale(1.1); box-shadow: 0px 10px 20px rgba(79, 172, 254, 0.6); }
+        .img-piano:active { transform: scale(0.9); }
+
+        /* ================= MODO QUIZ ================= */
+        #quizPergunta { font-size: 1.8rem; margin-bottom: 30px; height: 80px; }
         .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90vw; max-width: 500px; }
-        .btn-quiz { background: rgba(255,255,255,0.1); border: 2px solid #4facfe; color: white; padding: 20px; font-size: 2rem; border-radius: 15px; cursor: pointer; transition: 0.3s; }
-        .btn-quiz.correta { background: #28a745; }
-        .btn-quiz.errada { background: #dc3545; }
+        .btn-quiz { background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(79, 172, 254, 0.5); color: white; font-size: 2.5rem; font-weight: bold; padding: 20px; border-radius: 15px; cursor: pointer; transition: 0.3s; }
+        .btn-quiz:hover { background: rgba(79, 172, 254, 0.3); transform: scale(1.05); }
+        .btn-quiz.correta { background: #28a745; border-color: #28a745; }
+        .btn-quiz.errada { background: #dc3545; border-color: #dc3545; }
 
-        /* Desafios QTE */
-        .qte-container { position: relative; width: 250px; height: 250px; margin: 20px; }
-        .qte-img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; border: 4px solid #4facfe; }
-        .qte-letra-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 8rem; font-weight: bold; text-shadow: 0 0 20px #000; color: white; pointer-events: none; }
-        .barra-bg { width: 80vw; max-width: 600px; height: 30px; background: #000; border-radius: 15px; overflow: hidden; margin-bottom: 10px; border: 2px solid #4facfe; }
-        .barra-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); transition: width 0.2s; }
-        .barra-tempo-bg { width: 40vw; max-width: 300px; height: 8px; background: #000; border-radius: 4px; margin-top: 10px; }
-        .barra-tempo-fill { width: 100%; height: 100%; background: #ffc107; }
+        /* ================= DESAFIOS (QTE 1 e 2) ================= */
+        .qte-progresso-bg { width: 80vw; max-width: 600px; height: 35px; background: rgba(0,0,0,0.5); border-radius: 20px; overflow: hidden; margin: 20px 0; border: 3px solid #4facfe; }
+        .qte-progresso-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); transition: width 0.3s ease; }
+        
+        /* Cor de fogo pro progresso do desafio 2 */
+        .qte2-progresso-fill { width: 50%; height: 100%; background: linear-gradient(90deg, #ff4b2b, #ff416c); transition: width 0.1s linear; }
 
-        .flash-v { background-color: rgba(40, 167, 69, 0.4) !important; }
-        .flash-e { background-color: rgba(220, 53, 69, 0.4) !important; }
+        .letra-gigante { font-size: 10rem; font-weight: bold; margin: 10px 0; text-transform: uppercase; }
+        #qteLetra { text-shadow: 0px 0px 30px rgba(79, 172, 254, 0.8); }
+        #qte2Letra { text-shadow: 0px 0px 30px rgba(255, 65, 108, 0.8); color: #ffebf0; }
+
+        .qte-tempo-bg { width: 40vw; max-width: 300px; height: 10px; background: rgba(0,0,0,0.5); border-radius: 5px; overflow: hidden; margin: 10px auto; }
+        .qte-tempo-fill { width: 100%; height: 100%; background: #ffc107; }
+
+        .flash-verde { background-color: rgba(40, 167, 69, 0.3) !important; }
+        .flash-vermelho { background-color: rgba(220, 53, 69, 0.3) !important; }
+        .qte-status { font-size: 1.5rem; height: 30px; margin-top: 10px; font-weight: bold; }
+
+        /* ================= CONFIGURAÇÕES ================= */
+        .config-box { background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 20px; width: 90vw; max-width: 500px; margin-bottom: 20px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .config-box label { display: block; font-size: 1.2rem; margin-bottom: 15px; color: #4facfe; }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        #volumeTexto { float: right; font-weight: bold; color: #ffffff; }
     </style>
 </head>
 <body>
 
-    <!-- MENU -->
+    <!-- ================= MENU ================= -->
     <div id="telaMenu" class="tela ativa">
         <h1>Alfabeto</h1>
+        <p style="margin-bottom: 30px; color: #a0aec0;">Escolha um modo de jogo</p>
+
         <button class="btn-menu" onclick="abrirVisor('historia')">📖 Modo História</button>
         <button class="btn-menu" onclick="abrirVisor('livre')">🔓 Modo Livre</button>
         <button class="btn-menu" onclick="abrirTela('telaPiano')">🎹 Modo Piano</button>
         <button class="btn-menu" onclick="abrirTela('telaQuiz')">🧠 Modo Quiz</button>
-        <button id="btnQTE1" class="btn-menu bloqueado" onclick="iniciarQTE(1)">🔒 Desafio 1 (Reflexo)</button>
-        <button id="btnQTE2" class="btn-menu bloqueado" onclick="iniciarQTE(2)">🔒 Desafio 2 (Drenagem)</button>
-        <button class="btn-menu" onclick="abrirTela('telaConfig')" style="margin-top:20px">⚙️ Configurações</button>
+        
+        <!-- BOTOES DE DESAFIO (Começam Bloqueados) -->
+        <button id="btnMenuQTE" class="btn-menu bloqueado" onclick="iniciarQTE()">🔒 Modo Desafio 1 (Bloqueado)</button>
+        <button id="btnMenuQTE2" class="btn-menu bloqueado" onclick="iniciarQTE2()">🔒 Modo Desafio 2 (Bloqueado)</button>
+        
+        <button class="btn-menu" onclick="abrirTela('telaConfig')" style="margin-top: 20px;">⚙️ Configurações</button>
     </div>
 
-    <!-- VISOR (HISTÓRIA E LIVRE) -->
+    <!-- ================= VISUALIZADOR (HISTÓRIA/LIVRE) ================= -->
     <div id="telaVisor" class="tela">
         <button class="btn-voltar" onclick="abrirTela('telaMenu')">⬅ Voltar</button>
         <h2 id="tituloVisor">Modo</h2>
-        <select id="seletorLivre" onchange="selecionarLetraLivre(this.value)"></select>
-        <p id="textoLetra">Letra A (1/26)</p>
-        <img id="fotoPrincipal" class="foto-principal" src="fotos/f1.jpg" onclick="proximaFoto()">
+        <select id="seletorLivre"></select>
+        <p id="textoLetra"><span class="icone-som">🔊</span> Letra A (1 / 26)</p>
+        <img id="fotoAlfabeto" class="foto-principal" src="" alt="Letra do Alfabeto">
+        <p id="dicaVisor" style="margin-top: 15px; color: rgba(255,255,255,0.4); font-size: 0.9rem;">Dica</p>
     </div>
 
-    <!-- PIANO -->
+    <!-- ================= MODO PIANO ================= -->
     <div id="telaPiano" class="tela">
         <button class="btn-voltar" onclick="abrirTela('telaMenu')">⬅ Voltar</button>
         <h2>Modo Piano</h2>
+        <p style="color: #a0aec0;">Clique nas imagens para ouvir as letras</p>
         <div id="pianoGrid" class="piano-grid"></div>
     </div>
 
-    <!-- QUIZ -->
+    <!-- ================= MODO QUIZ ================= -->
     <div id="telaQuiz" class="tela">
         <button class="btn-voltar" onclick="abrirTela('telaMenu')">⬅ Voltar</button>
-        <h2 id="quizPergunta">Pergunta</h2>
+        <h2>Quiz</h2>
+        <p id="quizPergunta">Carregando pergunta...</p>
         <div id="quizRespostas" class="quiz-grid"></div>
     </div>
 
-    <!-- DESAFIOS (QTE) -->
-    <div id="telaDesafio" class="tela">
-        <button class="btn-voltar" onclick="sairDesafio()">⬅ Desistir</button>
-        <h2 id="qteTitulo">Nível 1</h2>
-        <div class="barra-bg"><div id="qteBarraProgresso" class="barra-fill"></div></div>
-        <div class="qte-container">
-            <img id="qteFoto" class="qte-img" src="fotos/f1.jpg">
-            <div id="qteLetraTxt" class="qte-letra-overlay">A</div>
-        </div>
-        <div id="areaTempo" class="barra-tempo-bg"><div id="qteBarraTempo" class="barra-tempo-fill"></div></div>
-        <p id="qteStatus" style="margin-top:10px; font-weight:bold"></p>
+    <!-- ================= MODO DESAFIO 1 (REFLEXO - TEMPO) ================= -->
+    <div id="telaQTE" class="tela">
+        <button class="btn-voltar" onclick="sairQTE()">⬅ Desistir</button>
+        <h2 id="qteTituloNivel">Nível 1</h2>
+        <p style="color: #a0aec0;">Aperte a tecla correspondente antes que a barra amarela acabe!</p>
+        
+        <div class="qte-progresso-bg"><div id="qteProgressoFill" class="qte-progresso-fill"></div></div>
+        <div id="qteLetra" class="letra-gigante">?</div>
+        <div class="qte-tempo-bg"><div id="qteTempoFill" class="qte-tempo-fill"></div></div>
+        <p id="qteStatus" class="qte-status"></p>
     </div>
 
-    <!-- CONFIG -->
+    <!-- ================= MODO DESAFIO 2 (SOBREVIVÊNCIA - DRENAGEM) ================= -->
+    <div id="telaQTE2" class="tela">
+        <button class="btn-voltar" onclick="sairQTE2()">⬅ Desistir</button>
+        <h2 id="qte2TituloNivel" style="color: #ff416c;">Sobrevivência: Nível 1</h2>
+        <p style="color: #a0aec0;">A barra vermelha está caindo! Digite as letras rápido para encher até 100%!</p>
+        
+        <!-- Barra de Progresso que drena -->
+        <div class="qte-progresso-bg" style="border-color: #ff416c;">
+            <div id="qte2ProgressoFill" class="qte2-progresso-fill"></div>
+        </div>
+        
+        <div id="qte2Letra" class="letra-gigante">?</div>
+        <p id="qte2Status" class="qte-status"></p>
+    </div>
+
+    <!-- ================= CONFIGURAÇÕES ================= -->
     <div id="telaConfig" class="tela">
         <button class="btn-voltar" onclick="abrirTela('telaMenu')">⬅ Voltar</button>
         <h2>Configurações</h2>
-        <div style="background:rgba(255,255,255,0.05); padding:30px; border-radius:20px; width:340px">
-            <label>Volume: <span id="valVol">100</span>%</label><br><br>
-            <input type="range" id="inputVol" min="0" max="573" value="100" style="width:100%" 
-                   oninput="document.getElementById('valVol').innerText = this.value" 
-                   onchange="atualizarVol(this.value)">
+        <div class="config-box">
+            <label>🔊 Volume da Voz <span id="volumeTexto">100%</span></label>
+            <input type="range" id="controleVolume" min="0" max="573" value="100">
         </div>
     </div>
 
+    <!-- ================= SCRIPTS ================= -->
     <script>
-        // ESTADO GLOBAL
-        let volume = 100, fotoAtual = 1, desbloqueado = false, modoAtual = '';
-        let qteAtivo = false, qteTipo = 1, qteNivel = 1, qteProgresso = 0, qteLetra = '', timerQTE, loopQTE;
+        // ==== VARIÁVEIS GLOBAIS ====
+        let volumeAtual = 100;
+        let fotoAtual = 1;
+        const totalDeFotos = 26;
+        let estaTrocando = false; 
+        let modoAtual = ''; 
+        let qteDesbloqueado = false; // Controla o desbloqueio dos Modos Desafio
 
-        // DIFICULDADE NERFADA (Lvl 7-10 agora são possíveis)
-        const diffs = [null,
-            { tempo: 2500, dreno: 0.1, cura: 20 }, { tempo: 2200, dreno: 0.15, cura: 18 },
-            { tempo: 1900, dreno: 0.2, cura: 15 }, { tempo: 1600, dreno: 0.25, cura: 13 },
-            { tempo: 1300, dreno: 0.3, cura: 12 }, { tempo: 1100, dreno: 0.35, cura: 10 },
-            { tempo: 1000, dreno: 0.4, cura: 10 }, { tempo: 900,  dreno: 0.45, cura: 9 }, // Nerf aqui
-            { tempo: 800,  dreno: 0.5,  cura: 8 },  { tempo: 700,  dreno: 0.6,  cura: 8 }  // Nerf aqui
+        // ==== QTE 1: REFLEXO ====
+        let qteAtivo = false;
+        let qteNivel = 1;
+        let qteProgresso = 0;
+        let qteLetraSorteada = '';
+        let qteTimerTimeout = null;
+
+        const qteDificuldades =[
+            null,
+            { tempo: 2500, avanco: 20, recuo: 0 },   
+            { tempo: 2000, avanco: 15, recuo: 0 },   
+            { tempo: 1500, avanco: 10, recuo: 5 },   
+            { tempo: 1200, avanco: 10, recuo: 5 },   
+            { tempo: 1000, avanco: 8,  recuo: 5 },   
+            { tempo: 850,  avanco: 8,  recuo: 8 },   
+            { tempo: 700,  avanco: 5,  recuo: 10 },  
+            { tempo: 600,  avanco: 5,  recuo: 15 },  
+            { tempo: 500,  avanco: 5,  recuo: 20 },  
+            { tempo: 450,  avanco: 4,  recuo: 25 }   
         ];
 
-        // INICIALIZAÇÃO
+        // ==== QTE 2: SOBREVIVÊNCIA ====
+        let qte2Ativo = false;
+        let qte2Nivel = 1;
+        let qte2Progresso = 50; 
+        let qte2LetraSorteada = '';
+        let qte2Interval = null;
+
+        /* DIFICULDADES QTE 2:
+           A função roda a cada 50ms (20 vezes por segundo).
+           drenagem: quantidade perdida a cada 50ms.
+           cura: o quanto enche quando digita a letra certa.
+           penalidade: o quanto perde instantaneamente ao digitar errado. */
+        const qte2Dificuldades =[
+            null,
+            { drenagem: 0.1,  cura: 15, penalidade: 5 },  // Lvl 1: Drena 2% por segundo
+            { drenagem: 0.15, cura: 12, penalidade: 8 },  // Lvl 2: Drena 3% por segundo
+            { drenagem: 0.2,  cura: 10, penalidade: 10 }, // Lvl 3: Drena 4% por segundo
+            { drenagem: 0.25, cura: 10, penalidade: 10 }, // Lvl 4: Drena 5% por segundo
+            { drenagem: 0.3,  cura: 8,  penalidade: 12 }, // Lvl 5: Drena 6% por segundo
+            { drenagem: 0.4,  cura: 8,  penalidade: 12 }, // Lvl 6: Drena 8% por segundo
+            { drenagem: 0.5,  cura: 7,  penalidade: 15 }, // Lvl 7: Drena 10% por segundo
+            { drenagem: 0.6,  cura: 7,  penalidade: 15 }, // Lvl 8: Drena 12% por segundo
+            { drenagem: 0.75, cura: 6,  penalidade: 20 }, // Lvl 9: Drena 15% por segundo
+            { drenagem: 0.9,  cura: 5,  penalidade: 25 }  // Lvl 10: Drena 18% por segundo (Exige >3.6 teclas certas por seg)
+        ];
+
+        const imagem = document.getElementById('fotoAlfabeto');
+        const textoLetra = document.getElementById('textoLetra');
+        const seletorLivre = document.getElementById('seletorLivre');
+
+        // ==== INICIALIZAÇÃO ====
         window.onload = () => {
-            const grid = document.getElementById('pianoGrid');
-            const sel = document.getElementById('seletorLivre');
-            for(let i=1; i<=26; i++) {
-                let letra = String.fromCharCode(64 + i);
-                // Piano
-                let img = document.createElement('img');
-                img.src = `fotos/f${i}.jpg`; img.className = 'img-piano';
-                img.onclick = () => falar(letra);
-                grid.appendChild(img);
-                // Seletor
-                let opt = document.createElement('option');
-                opt.value = i; opt.innerText = "Letra " + letra;
-                sel.appendChild(opt);
+            const pianoGrid = document.getElementById('pianoGrid');
+            for (let i = 1; i <= totalDeFotos; i++) {
+                const letra = String.fromCharCode(64 + i);
+                
+                const imgTecla = document.createElement('img');
+                imgTecla.src = `fotos/f${i}.jpg`;
+                imgTecla.className = 'img-piano';
+                imgTecla.onclick = () => falarLetra(letra);
+                pianoGrid.appendChild(imgTecla);
+
+                const opcao = document.createElement('option');
+                opcao.value = i;
+                opcao.innerText = `Começar na Letra ${letra}`;
+                seletorLivre.appendChild(opcao);
             }
         };
 
-        function abrirTela(id) {
+        function abrirTela(idTela) {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-            document.getElementById(id).classList.add('ativa');
-            if(id === 'telaQuiz') gerarQuiz();
+            document.getElementById(idTela).classList.add('ativa');
+            if(idTela === 'telaQuiz') iniciarQuiz();
         }
 
-        function falar(txt) {
-            if(qteAtivo) return;
+        // ==== ROBÔ DE VOZ E VOLUME ====
+        function falarLetra(texto) {
+            // Silencia o robô se estiver nos desafios rápidos para não bugar a voz
+            if(qteAtivo || qte2Ativo) return; 
             window.speechSynthesis.cancel();
-            let msg = new SpeechSynthesisUtterance(txt);
-            msg.lang = 'pt-BR'; msg.volume = volume / 100;
-            window.speechSynthesis.speak(msg);
+            let fala = new SpeechSynthesisUtterance(texto);
+            fala.lang = 'pt-BR';
+            fala.volume = volumeAtual / 100; 
+            window.speechSynthesis.speak(fala);
         }
 
-        function atualizarVol(v) { volume = v; falar("Teste"); }
+        const sliderVolume = document.getElementById('controleVolume');
+        sliderVolume.addEventListener('input', () => { document.getElementById('volumeTexto').innerText = sliderVolume.value + "%"; });
+        sliderVolume.addEventListener('change', () => { volumeAtual = sliderVolume.value; falarLetra("Teste"); });
 
-        // VISOR
-        function abrirVisor(m) {
-            modoAtual = m; fotoAtual = 1;
-            document.getElementById('tituloVisor').innerText = m === 'historia' ? "Modo História" : "Modo Livre";
-            document.getElementById('seletorLivre').style.display = m === 'livre' ? "block" : "none";
-            carregarFoto(true); abrirTela('telaVisor');
+        // ==== LÓGICA DO MODO HISTÓRIA E LIVRE ====
+        function abrirVisor(modo) {
+            modoAtual = modo;
+            document.getElementById('tituloVisor').innerText = modo === 'historia' ? 'Modo História' : 'Modo Livre';
+            if (modo === 'historia') {
+                fotoAtual = 1;
+                seletorLivre.style.display = 'none';
+                document.getElementById('dicaVisor').innerText = "Clique ou use a seta ➡️ para avançar";
+            } else {
+                seletorLivre.style.display = 'block';
+                document.getElementById('dicaVisor').innerText = "Use ⬅️ ➡️, clique na foto, ou no menu acima";
+            }
+            carregarFoto(true);
+            abrirTela('telaVisor');
         }
 
-        function selecionarLetraLivre(v) { fotoAtual = parseInt(v); carregarFoto(true); }
+        seletorLivre.addEventListener('change', (e) => { fotoAtual = parseInt(e.target.value); carregarFoto(true); });
 
-        function proximaFoto() {
-            fotoAtual++;
-            if(fotoAtual > 26) { fotoAtual = 1; }
-            carregarFoto(false);
-        }
-
-        function carregarFoto(silencioso) {
-            const img = document.getElementById('fotoPrincipal');
-            const txt = document.getElementById('textoLetra');
-            let letra = String.fromCharCode(64 + fotoAtual);
-            
-            img.style.opacity = 0;
+        function carregarFoto(silencioso = false) {
+            imagem.style.opacity = 0;
             setTimeout(() => {
-                img.src = `fotos/f${fotoAtual}.jpg`;
-                txt.innerText = `Letra ${letra} (${fotoAtual}/26)`;
-                img.onload = () => {
-                    img.style.opacity = 1;
-                    if(!silencioso) falar(letra);
-                    if(modoAtual === 'historia' && fotoAtual === 26 && !desbloqueado) liberarDesafios();
+                const nomeDaLetra = String.fromCharCode(64 + fotoAtual);
+                textoLetra.innerHTML = `<span class="icone-som">🔊</span> Letra ${nomeDaLetra} (${fotoAtual} / 26)`;
+                seletorLivre.value = fotoAtual; 
+
+                // *** SISTEMA DE DESBLOQUEIO DOS DOIS QTEs ***
+                if(modoAtual === 'historia' && fotoAtual === 26 && !qteDesbloqueado) {
+                    qteDesbloqueado = true;
+                    
+                    const btn1 = document.getElementById('btnMenuQTE');
+                    btn1.classList.remove('bloqueado');
+                    btn1.innerHTML = '⚡ Modo Desafio 1 (Reflexo)';
+                    
+                    const btn2 = document.getElementById('btnMenuQTE2');
+                    btn2.classList.remove('bloqueado');
+                    btn2.innerHTML = '🔥 Modo Desafio 2 (Sobrevivência)';
+                    
+                    setTimeout(() => {
+                        alert("🎉 PARABÉNS! Você chegou ao fim do alfabeto e DESBLOQUEOU OS 2 MODOS DESAFIO!");
+                    }, 500);
+                }
+
+                imagem.onload = () => {
+                    imagem.style.opacity = 1;
+                    estaTrocando = false; 
+                    if (!silencioso) falarLetra(nomeDaLetra);
                 };
+                imagem.src = `fotos/f${fotoAtual}.jpg`;
             }, 200);
         }
 
-        function liberarDesafios() {
-            desbloqueado = true;
-            document.getElementById('btnQTE1').classList.remove('bloqueado');
-            document.getElementById('btnQTE1').innerText = "⚡ Desafio 1 (Reflexo)";
-            document.getElementById('btnQTE2').classList.remove('bloqueado');
-            document.getElementById('btnQTE2').innerText = "🔥 Desafio 2 (Drenagem)";
-            alert("🎉 Parabéns! Você completou o alfabeto e desbloqueou os Desafios!");
-        }
+        function mudarFoto(direcao) {
+            if (!document.getElementById('telaVisor').classList.contains('ativa') || estaTrocando) return;
+            if (modoAtual === 'historia' && direcao === 'tras') return; 
 
-        // QUIZ
-        function gerarQuiz() {
-            const perguntas = [
-                () => { let n = Math.floor(Math.random()*25)+1; return { q: `Qual letra vem depois de ${String.fromCharCode(64+n)}?`, a: String.fromCharCode(64+n+1) }; },
-                () => { let n = Math.floor(Math.random()*26)+1; return { q: `Qual é a ${n}ª letra do alfabeto?`, a: String.fromCharCode(64+n) }; },
-                () => { let n = Math.floor(Math.random()*15)+1; let p = Math.floor(Math.random()*5)+2; return { q: `Qual letra está ${p} casas à frente de ${String.fromCharCode(64+n)}?`, a: String.fromCharCode(64+n+p) }; }
-            ];
-            let obj = perguntas[Math.floor(Math.random()*perguntas.length)]();
-            document.getElementById('quizPergunta').innerText = obj.q;
-            let opcoes = [obj.a];
-            while(opcoes.length < 4) {
-                let err = String.fromCharCode(64 + Math.floor(Math.random()*26)+1);
-                if(!opcoes.includes(err)) opcoes.push(err);
+            estaTrocando = true;
+            if (direcao === 'frente') {
+                fotoAtual = (fotoAtual % totalDeFotos) + 1;
+            } else if (direcao === 'tras') {
+                fotoAtual--; if (fotoAtual < 1) fotoAtual = totalDeFotos;
             }
-            opcoes.sort(() => Math.random() - 0.5);
-            const res = document.getElementById('quizRespostas'); res.innerHTML = '';
-            opcoes.forEach(opt => {
-                let btn = document.createElement('button'); btn.className = 'btn-quiz'; btn.innerText = opt;
-                btn.onclick = () => {
-                    if(opt === obj.a) { btn.classList.add('correta'); falar("Correto!"); setTimeout(gerarQuiz, 1000); }
-                    else { btn.classList.add('errada'); falar("Tente de novo"); setTimeout(()=>btn.classList.remove('errada'), 500); }
-                };
-                res.appendChild(btn);
-            });
+            carregarFoto(false);
         }
 
-        // DESAFIOS (QTE)
-        function iniciarQTE(tipo) {
-            if(!desbloqueado) return;
-            qteTipo = tipo; qteNivel = 1; qteProgresso = tipo === 1 ? 0 : 50;
-            qteAtivo = true;
-            document.getElementById('areaTempo').style.opacity = tipo === 1 ? 1 : 0;
-            abrirTela('telaDesafio');
-            proximaLetraQTE();
-            if(tipo === 2) loopQTE = setInterval(drenarQTE, 50);
+        imagem.addEventListener('click', () => mudarFoto('frente'));
+
+        // ================= QTE 1 (REFLEXO COM TEMPO) =================
+        function iniciarQTE() {
+            if(!qteDesbloqueado) return alert("Termine o Modo História até a Letra Z para desbloquear!");
+            qteNivel = 1;
+            abrirTela('telaQTE');
+            comecarNivelQTE();
         }
 
-        function proximaLetraQTE() {
-            let n = Math.floor(Math.random()*26)+1;
-            qteLetra = String.fromCharCode(64 + n);
-            document.getElementById('qteFoto').src = `fotos/f${n}.jpg`;
-            document.getElementById('qteLetraTxt').innerText = qteLetra;
-            document.getElementById('qteTitulo').innerText = (qteTipo === 1 ? "Reflexo: Nível " : "Drenagem: Nível ") + qteNivel;
+        function sairQTE() { qteAtivo = false; clearTimeout(qteTimerTimeout); abrirTela('telaMenu'); }
+
+        function comecarNivelQTE() {
+            qteAtivo = true; qteProgresso = 0;
+            document.getElementById('qteProgressoFill').style.width = '0%';
+            document.getElementById('qteTituloNivel').innerText = `Nível ${qteNivel}`;
+            document.getElementById('qteStatus').innerText = "Prepare-se...";
+            document.getElementById('qteStatus').style.color = "#a0aec0";
+            setTimeout(() => { gerarLetraQTE(); }, 1000);
+        }
+
+        function gerarLetraQTE() {
+            if(!qteAtivo) return;
+            qteLetraSorteada = String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+            document.getElementById('qteLetra').innerText = qteLetraSorteada;
             
-            if(qteTipo === 1) {
-                const b = document.getElementById('qteBarraTempo');
-                b.style.transition = 'none'; b.style.width = '100%';
-                setTimeout(() => {
-                    b.style.transition = `width ${diffs[qteNivel].tempo}ms linear`;
-                    b.style.width = '0%';
-                }, 10);
-                clearTimeout(timerQTE);
-                timerQTE = setTimeout(() => falhaQTE("Lento!"), diffs[qteNivel].tempo);
+            const dificuldade = qteDificuldades[qteNivel];
+            const barraTempo = document.getElementById('qteTempoFill');
+            barraTempo.style.transition = 'none'; barraTempo.style.width = '100%';
+            void barraTempo.offsetWidth; 
+            barraTempo.style.transition = `width ${dificuldade.tempo}ms linear`;
+            barraTempo.style.width = '0%'; 
+
+            clearTimeout(qteTimerTimeout);
+            qteTimerTimeout = setTimeout(() => { processarJogadaQTE(false, "Lento demais!"); }, dificuldade.tempo);
+        }
+
+        function processarJogadaQTE(acertou, msg = "") {
+            clearTimeout(qteTimerTimeout);
+            const dificuldade = qteDificuldades[qteNivel];
+            const telaQTE = document.getElementById('telaQTE');
+
+            if(acertou) {
+                qteProgresso = Math.min(100, qteProgresso + dificuldade.avanco);
+                document.getElementById('qteStatus').innerText = "BOA!";
+                document.getElementById('qteStatus').style.color = "#28a745";
+                telaQTE.classList.add('flash-verde'); setTimeout(() => telaQTE.classList.remove('flash-verde'), 150);
+            } else {
+                qteProgresso = Math.max(0, qteProgresso - dificuldade.recuo);
+                document.getElementById('qteStatus').innerText = msg;
+                document.getElementById('qteStatus').style.color = "#dc3545";
+                telaQTE.classList.add('flash-vermelho'); setTimeout(() => telaQTE.classList.remove('flash-vermelho'), 150);
             }
-        }
 
-        function drenarQTE() {
-            qteProgresso -= diffs[qteNivel].dreno;
-            if(qteProgresso <= 0) falhaQTE("Esvaziou!");
-            document.getElementById('qteBarraProgresso').style.width = qteProgresso + "%";
-        }
+            document.getElementById('qteProgressoFill').style.width = `${qteProgresso}%`;
 
-        function falhaQTE(msg) {
-            document.getElementById('qteStatus').innerText = msg;
-            document.getElementById('telaDesafio').classList.add('flash-e');
-            setTimeout(() => document.getElementById('telaDesafio').classList.remove('flash-e'), 200);
-            if(qteTipo === 1) { qteProgresso = Math.max(0, qteProgresso - 10); proximaLetraQTE(); }
-            else { qteProgresso = Math.max(0, qteProgresso - 15); }
-        }
-
-        function sucessoQTE() {
-            document.getElementById('telaDesafio').classList.add('flash-v');
-            setTimeout(() => document.getElementById('telaDesafio').classList.remove('flash-v'), 200);
-            qteProgresso += diffs[qteNivel].cura;
             if(qteProgresso >= 100) {
-                if(qteNivel >= 10) { alert("🏆 VOCÊ É UM MESTRE!"); sairDesafio(); }
-                else { qteNivel++; qteProgresso = qteTipo === 1 ? 0 : 50; alert("Nível " + qteNivel); }
+                qteAtivo = false;
+                document.getElementById('qteLetra').innerText = "✓";
+                setTimeout(() => {
+                    if(qteNivel === 10) {
+                        alert("👑 INACREDITÁVEL! Você superou a velocidade da luz e VENCEU O MODO REFLEXO!");
+                        sairQTE();
+                    } else {
+                        alert(`Passou do Nível ${qteNivel}!`);
+                        qteNivel++; comecarNivelQTE();
+                    }
+                }, 500);
+            } else {
+                gerarLetraQTE();
             }
-            proximaLetraQTE();
         }
 
-        function sairDesafio() {
-            qteAtivo = false; clearInterval(loopQTE); clearTimeout(timerQTE);
-            abrirTela('telaMenu');
+        // ================= QTE 2 (SOBREVIVÊNCIA COM DRENAGEM) =================
+        function iniciarQTE2() {
+            if(!qteDesbloqueado) return alert("Termine o Modo História até a Letra Z para desbloquear!");
+            qte2Nivel = 1;
+            abrirTela('telaQTE2');
+            comecarNivelQTE2();
         }
 
-        // TECLADO
-        document.addEventListener('keydown', (e) => {
-            if(!qteAtivo) {
-                if(document.getElementById('telaVisor').classList.contains('ativa')) {
-                    if(e.key === 'ArrowRight') proximaFoto();
-                    if(e.key === 'ArrowLeft' && modoAtual === 'livre') { fotoAtual--; if(fotoAtual<1) fotoAtual=26; carregarFoto(false); }
+        function sairQTE2() { qte2Ativo = false; clearInterval(qte2Interval); abrirTela('telaMenu'); }
+
+        function comecarNivelQTE2() {
+            qte2Ativo = true; 
+            qte2Progresso = 50; // Começa na metade para ter chance
+            document.getElementById('qte2ProgressoFill').style.width = '50%';
+            document.getElementById('qte2TituloNivel').innerText = `Sobrevivência: Nível ${qte2Nivel}`;
+            document.getElementById('qte2Status').innerText = "VAI!";
+            document.getElementById('qte2Status').style.color = "#a0aec0";
+            
+            gerarLetraQTE2();
+            
+            clearInterval(qte2Interval);
+            qte2Interval = setInterval(loopQTE2, 50); // Roda a cada 50 milissegundos
+        }
+
+        function gerarLetraQTE2() {
+            qte2LetraSorteada = String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+            document.getElementById('qte2Letra').innerText = qte2LetraSorteada;
+        }
+
+        function loopQTE2() {
+            if(!qte2Ativo) return;
+            const dificuldade = qte2Dificuldades[qte2Nivel];
+            
+            // Drena a barra aos poucos
+            qte2Progresso -= dificuldade.drenagem;
+            
+            if(qte2Progresso <= 0) {
+                qte2Progresso = 0;
+                document.getElementById('qte2ProgressoFill').style.width = '0%';
+                perdeuQTE2();
+            } else {
+                document.getElementById('qte2ProgressoFill').style.width = `${qte2Progresso}%`;
+            }
+        }
+
+        function processarJogadaQTE2(acertou) {
+            if(!qte2Ativo) return;
+            const dificuldade = qte2Dificuldades[qte2Nivel];
+            const tela = document.getElementById('telaQTE2');
+
+            if(acertou) {
+                qte2Progresso += dificuldade.cura;
+                if(qte2Progresso >= 100) {
+                    qte2Progresso = 100;
+                    document.getElementById('qte2ProgressoFill').style.width = '100%';
+                    venceuNivelQTE2();
+                    return;
                 }
-                return;
+                gerarLetraQTE2(); // Sortear nova letra apenas se acertar
+                tela.classList.add('flash-verde'); setTimeout(() => tela.classList.remove('flash-verde'), 100);
+            } else {
+                qte2Progresso -= dificuldade.penalidade;
+                if(qte2Progresso <= 0) {
+                    qte2Progresso = 0;
+                    document.getElementById('qte2ProgressoFill').style.width = '0%';
+                    perdeuQTE2();
+                    return;
+                }
+                tela.classList.add('flash-vermelho'); setTimeout(() => tela.classList.remove('flash-vermelho'), 100);
             }
-            let key = e.key.toUpperCase();
-            if(key === qteLetra) sucessoQTE();
-            else falhaQTE("Errado!");
+            document.getElementById('qte2ProgressoFill').style.width = `${qte2Progresso}%`;
+        }
+
+        function perdeuQTE2() {
+            qte2Ativo = false;
+            clearInterval(qte2Interval);
+            document.getElementById('qte2Status').innerText = "A barra esvaziou! Fim de jogo.";
+            document.getElementById('qte2Status').style.color = "#dc3545";
+            setTimeout(() => {
+                alert(`Você perdeu no Nível ${qte2Nivel}. Seja mais rápido!`);
+                sairQTE2();
+            }, 500);
+        }
+
+        function venceuNivelQTE2() {
+            qte2Ativo = false;
+            clearInterval(qte2Interval);
+            document.getElementById('qte2Letra').innerText = "✓";
+            document.getElementById('qte2Status').innerText = "100% ATINGIDO!";
+            document.getElementById('qte2Status').style.color = "#28a745";
+            
+            setTimeout(() => {
+                if(qte2Nivel === 10) {
+                    alert("👑 LENDÁRIO! Você resistiu à drenagem máxima e VENCEU O MODO SOBREVIVÊNCIA!!");
+                    sairQTE2();
+                } else {
+                    alert(`Nível ${qte2Nivel} concluído! Prepare-se... a queda ficará mais rápida!`);
+                    qte2Nivel++;
+                    comecarNivelQTE2();
+                }
+            }, 500);
+        }
+
+        // ==== LÓGICA DO TECLADO (GLOBAL) ====
+        document.addEventListener('keydown', (evento) => {
+            const tecla = evento.key.toUpperCase();
+
+            // Intercepta se estiver no Modo QTE 1
+            if(qteAtivo && /^[A-Z]$/.test(tecla)) {
+                if(tecla === qteLetraSorteada) processarJogadaQTE(true);
+                else processarJogadaQTE(false, "Tecla Errada!");
+                return; 
+            }
+
+            // Intercepta se estiver no Modo QTE 2
+            if(qte2Ativo && /^[A-Z]$/.test(tecla)) {
+                if(tecla === qte2LetraSorteada) processarJogadaQTE2(true);
+                else processarJogadaQTE2(false);
+                return; 
+            }
+
+            if (evento.key === 'ArrowRight') mudarFoto('frente'); 
+            if (evento.key === 'ArrowLeft') mudarFoto('tras');   
         });
 
+        // ==== LÓGICA DO MODO QUIZ ====
+        // (O código de gerar quiz não foi modificado, mantendo suas regras perfeitamente)
+        let respostaCorretaQuiz = '';
+        function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+        function embaralhar(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function iniciarQuiz() { gerarPerguntaQuiz(); }
+
+        function gerarPerguntaQuiz() {
+            const caixaRespostas = document.getElementById('quizRespostas');
+            caixaRespostas.innerHTML = ''; 
+            const tipo = randomInt(0, 2);
+            let textoPergunta = ""; let codLetraCorreta = 0;
+
+            if (tipo === 0) {
+                let letraSorteada = randomInt(1, 25);
+                textoPergunta = `Qual letra vem depois da letra ${String.fromCharCode(64 + letraSorteada)}?`;
+                codLetraCorreta = letraSorteada + 1;
+            } else if (tipo === 1) {
+                let posicao = randomInt(1, 26);
+                textoPergunta = `Qual é a ${posicao}ª letra do alfabeto?`;
+                codLetraCorreta = posicao;
+            } else {
+                let letraInicio = randomInt(1, 20); 
+                let casasAvanco = randomInt(2, 26 - letraInicio); 
+                textoPergunta = `Qual letra está ${casasAvanco} casas na frente da letra ${String.fromCharCode(64 + letraInicio)}?`;
+                codLetraCorreta = letraInicio + casasAvanco;
+            }
+
+            respostaCorretaQuiz = String.fromCharCode(64 + codLetraCorreta);
+            document.getElementById('quizPergunta').innerText = textoPergunta;
+
+            let opcoes = [respostaCorretaQuiz];
+            while (opcoes.length < 4) {
+                let errada = String.fromCharCode(64 + randomInt(1, 26));
+                if (!opcoes.includes(errada)) opcoes.push(errada);
+            }
+
+            opcoes = embaralhar(opcoes);
+            opcoes.forEach(letraOpcao => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-quiz';
+                btn.innerText = letraOpcao;
+                
+                btn.onclick = () => {
+                    if (btn.classList.contains('correta') || btn.classList.contains('errada')) return;
+                    if (letraOpcao === respostaCorretaQuiz) {
+                        btn.classList.add('correta'); falarLetra("Correto");
+                        setTimeout(gerarPerguntaQuiz, 1500);
+                    } else {
+                        btn.classList.add('errada'); falarLetra("Tente novamente");
+                        setTimeout(() => btn.classList.remove('errada'), 1000);
+                    }
+                };
+                caixaRespostas.appendChild(btn);
+            });
+        }
     </script>
 </body>
 </html>
