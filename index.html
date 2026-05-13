@@ -20,6 +20,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden; /* Evita barras de rolagem */
         }
 
         .container {
@@ -38,12 +39,16 @@
             text-shadow: 0px 4px 15px rgba(79, 172, 254, 0.4);
         }
 
-        p.instrucao {
-            font-size: 1rem;
+        /* O subtítulo agora vai mudar dinamicamente */
+        p#textoLetra {
+            font-size: 1.2rem;
             color: #a0aec0;
             margin-bottom: 25px;
-            font-weight: 300;
-            letter-spacing: 1px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 15px;
+            border-radius: 20px;
         }
 
         img {
@@ -65,44 +70,92 @@
         img:active {
             transform: scale(0.98);
         }
+
+        /* Dica de teclado no rodapé */
+        .dica-teclado {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Alfabeto</h1>
-        <p class="instrucao">Clique na imagem para ver a próxima letra</p>
+        
+        <!-- Esse texto vai ser atualizado pelo Javascript -->
+        <p id="textoLetra">Letra A (1 / 26)</p>
         
         <img id="fotoAlfabeto" src="fotos/f1.jpg" alt="Letra do Alfabeto">
     </div>
 
+    <!-- Dica flutuante embaixo -->
+    <div class="dica-teclado">Use as setas ⬅️ e ➡️ do teclado para navegar ou clique na imagem.</div>
+
     <script>
         const imagem = document.getElementById('fotoAlfabeto');
+        const textoLetra = document.getElementById('textoLetra');
+        
         let fotoAtual = 1;
         const totalDeFotos = 26; 
+        let estaTrocando = false; // Evita que o usuário clique várias vezes rápido demais e bugue a tela
 
-        imagem.addEventListener('click', () => {
-            // 1. Inicia o fade out (apaga a foto atual)
+        // Função principal que troca a foto (agora aceita 'frente' ou 'tras')
+        function mudarFoto(direcao) {
+            if (estaTrocando) return; // Se já estiver no meio do fade, ignora o novo clique
+            estaTrocando = true;
+
+            // 1. Apaga a foto
             imagem.style.opacity = 0;
 
-            // 2. Espera os exatos 300ms do CSS para a foto ficar invisível
             setTimeout(() => {
-                fotoAtual++;
-
-                if (fotoAtual > totalDeFotos) {
-                    fotoAtual = 1;
+                // 2. Calcula qual é a próxima foto (avança ou volta)
+                if (direcao === 'frente') {
+                    fotoAtual++;
+                    if (fotoAtual > totalDeFotos) fotoAtual = 1;
+                } else if (direcao === 'tras') {
+                    fotoAtual--;
+                    if (fotoAtual < 1) fotoAtual = totalDeFotos;
                 }
 
-                // 3. Função fundamental: SÓ acende a tela de novo quando a foto NOVA carregar
+                // 3. Atualiza o texto (Ex: 65 em código de caracteres é 'A', 66 é 'B')
+                // Como nossa foto 1 é A, fazemos 64 + 1 = 65 ('A')
+                const nomeDaLetra = String.fromCharCode(64 + fotoAtual);
+                textoLetra.innerText = `Letra ${nomeDaLetra} (${fotoAtual} / 26)`;
+
+                // 4. Quando a imagem nova carregar, acende a tela
                 imagem.onload = () => {
                     imagem.style.opacity = 1;
+                    estaTrocando = false; // Libera para o usuário clicar de novo
                 };
 
-                // 4. Troca a fonte da imagem (isso faz o navegador ir buscar a nova foto)
+                // 5. Troca o arquivo da foto
                 imagem.src = `fotos/f${fotoAtual}.jpg`;
-                
+
+                // 6. Preload: Puxa a próxima foto de forma invisível para o cache do navegador
+                let proximaFoto = (fotoAtual % totalDeFotos) + 1;
+                let imgPreload = new Image();
+                imgPreload.src = `fotos/f${proximaFoto}.jpg`;
+
             }, 300);
+        }
+
+        // Clicar na imagem vai para a frente
+        imagem.addEventListener('click', () => {
+            mudarFoto('frente');
         });
+
+        // Usar as setas do teclado para ir para frente ou para trás
+        document.addEventListener('keydown', (evento) => {
+            if (evento.key === 'ArrowRight') {
+                mudarFoto('frente'); // Seta para direita
+            } else if (evento.key === 'ArrowLeft') {
+                mudarFoto('tras');   // Seta para esquerda
+            }
+        });
+
     </script>
 
 </body>
