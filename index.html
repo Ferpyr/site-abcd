@@ -156,10 +156,10 @@
         <h1>Alfabeto</h1>
         <p style="margin-bottom: 30px; color: #a0aec0;">Escolha um modo de jogo</p>
 
-        <button class="btn-menu" onclick="abrirVisor('historia')">📖 Modo História</button>
-        <button class="btn-menu" onclick="abrirVisor('livre')">🔓 Modo Livre</button>
-        <button class="btn-menu" onclick="abrirTela('telaPiano')">🎹 Modo Piano</button>
-        <button class="btn-menu" onclick="abrirTela('telaQuiz')">🧠 Modo Quiz</button>
+        <button class="btn-menu" onclick="abrirVisor('historia')">Modo História</button>
+        <button class="btn-menu" onclick="abrirVisor('livre')">Modo Livre</button>
+        <button class="btn-menu" onclick="abrirTela('telaPiano')">Modo Piano</button>
+        <button class="btn-menu" onclick="abrirTela('telaQuiz')">Modo Quiz</button>
         
         <!-- BOTOES DE DESAFIO (Começam Bloqueados) -->
         <button id="btnMenuQTE" class="btn-menu bloqueado" onclick="iniciarQTE()">🔒 Modo Desafio 1 (Bloqueado)</button>
@@ -198,7 +198,7 @@
     <div id="telaQTE" class="tela">
         <button class="btn-voltar" onclick="sairQTE()">⬅ Desistir</button>
         <h2 id="qteTituloNivel">Nível 1</h2>
-        <p style="color: #a0aec0;">Aperte a tecla correspondente antes que a barra amarela acabe!</p>
+        <p style="color: #a0aec0;">Aperta a tecla certa ae</p>
         
         <div class="qte-progresso-bg"><div id="qteProgressoFill" class="qte-progresso-fill"></div></div>
         <div id="qteLetra" class="letra-gigante">?</div>
@@ -210,7 +210,7 @@
     <div id="telaQTE2" class="tela">
         <button class="btn-voltar" onclick="sairQTE2()">⬅ Desistir</button>
         <h2 id="qte2TituloNivel" style="color: #ff416c;">Sobrevivência: Nível 1</h2>
-        <p style="color: #a0aec0;">A barra vermelha está caindo! Digite as letras rápido para encher até 100%!</p>
+        <p style="color: #a0aec0;">A barra ta caindo digita ae logo VAI</p>
         
         <!-- Barra de Progresso que drena -->
         <div class="qte-progresso-bg" style="border-color: #ff416c;">
@@ -226,7 +226,7 @@
         <button class="btn-voltar" onclick="abrirTela('telaMenu')">⬅ Voltar</button>
         <h2>Configurações</h2>
         <div class="config-box">
-            <label>🔊 Volume da Voz <span id="volumeTexto">100%</span></label>
+            <label> Volume da Voz <span id="volumeTexto">100%</span></label>
             <input type="range" id="controleVolume" min="0" max="573" value="100">
         </div>
     </div>
@@ -363,14 +363,14 @@
                     
                     const btn1 = document.getElementById('btnMenuQTE');
                     btn1.classList.remove('bloqueado');
-                    btn1.innerHTML = '⚡ Modo Desafio 1 (Reflexo)';
+                    btn1.innerHTML = 'Modo Desafio 1 (Reflexo)';
                     
                     const btn2 = document.getElementById('btnMenuQTE2');
                     btn2.classList.remove('bloqueado');
-                    btn2.innerHTML = '🔥 Modo Desafio 2 (Sobrevivência)';
+                    btn2.innerHTML = 'Modo Desafio 2 (Sobrevivência)';
                     
                     setTimeout(() => {
-                        alert("🎉 PARABÉNS! Você chegou ao fim do alfabeto e DESBLOQUEOU OS 2 MODOS DESAFIO!");
+                        alert("Ae, agora joga o modo desafio");
                     }, 500);
                 }
 
@@ -400,7 +400,7 @@
 
         // ================= QTE 1 (REFLEXO COM TEMPO) =================
         function iniciarQTE() {
-            if(!qteDesbloqueado) return alert("Termine o Modo História até a Letra Z para desbloquear!");
+            if(!qteDesbloqueado) return alert("Faz o modo historia antes >:C");
             qteNivel = 1;
             abrirTela('telaQTE');
             comecarNivelQTE();
@@ -457,7 +457,7 @@
                 document.getElementById('qteLetra').innerText = "✓";
                 setTimeout(() => {
                     if(qteNivel === 10) {
-                        alert("👑 INACREDITÁVEL! Você superou a velocidade da luz e VENCEU O MODO REFLEXO!");
+                        alert("Parabéns, é real dificil terminar isso, eu n acho q vc vai ver essa msg");
                         sairQTE();
                     } else {
                         alert(`Passou do Nível ${qteNivel}!`);
@@ -471,7 +471,7 @@
 
         // ================= QTE 2 (SOBREVIVÊNCIA COM DRENAGEM) =================
         function iniciarQTE2() {
-            if(!qteDesbloqueado) return alert("Termine o Modo História até a Letra Z para desbloquear!");
+            if(!qteDesbloqueado) return alert("Faz o modo historia antes >:C");
             qte2Nivel = 1;
             abrirTela('telaQTE2');
             comecarNivelQTE2();
@@ -562,10 +562,10 @@
             
             setTimeout(() => {
                 if(qte2Nivel === 10) {
-                    alert("👑 LENDÁRIO! Você resistiu à drenagem máxima e VENCEU O MODO SOBREVIVÊNCIA!!");
+                    alert(" Legal vc conseguiu parabéns >:D");
                     sairQTE2();
                 } else {
-                    alert(`Nível ${qte2Nivel} concluído! Prepare-se... a queda ficará mais rápida!`);
+                    alert(`Nível ${qte2Nivel} Vai ficar mais rapido`);
                     qte2Nivel++;
                     comecarNivelQTE2();
                 }
