@@ -20,7 +20,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden; /* Evita barras de rolagem */
+            overflow: hidden; 
         }
 
         .container {
@@ -39,7 +39,6 @@
             text-shadow: 0px 4px 15px rgba(79, 172, 254, 0.4);
         }
 
-        /* O subtítulo agora vai mudar dinamicamente */
         p#textoLetra {
             font-size: 1.2rem;
             color: #a0aec0;
@@ -49,6 +48,15 @@
             background: rgba(255, 255, 255, 0.05);
             padding: 5px 15px;
             border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espaço entre o texto e o ícone de som */
+        }
+
+        /* Ícone de som animado ao lado do texto */
+        .icone-som {
+            font-size: 1.5rem;
+            opacity: 0.8;
         }
 
         img {
@@ -71,7 +79,6 @@
             transform: scale(0.98);
         }
 
-        /* Dica de teclado no rodapé */
         .dica-teclado {
             position: absolute;
             bottom: 20px;
@@ -85,14 +92,13 @@
     <div class="container">
         <h1>Alfabeto</h1>
         
-        <!-- Esse texto vai ser atualizado pelo Javascript -->
-        <p id="textoLetra">Letra A (1 / 26)</p>
+        <!-- Adicionei um ícone de "alto-falante" para indicar que agora tem som -->
+        <p id="textoLetra"><span class="icone-som">🔊</span> Letra A (1 / 26)</p>
         
         <img id="fotoAlfabeto" src="fotos/f1.jpg" alt="Letra do Alfabeto">
     </div>
 
-    <!-- Dica flutuante embaixo -->
-    <div class="dica-teclado">Use as setas ⬅️ e ➡️ do teclado para navegar ou clique na imagem.</div>
+    <div class="dica-teclado">Aumente o som 🔊 • Use as setas ⬅️ e ➡️ do teclado ou clique na imagem.</div>
 
     <script>
         const imagem = document.getElementById('fotoAlfabeto');
@@ -100,18 +106,35 @@
         
         let fotoAtual = 1;
         const totalDeFotos = 26; 
-        let estaTrocando = false; // Evita que o usuário clique várias vezes rápido demais e bugue a tela
+        let estaTrocando = false; 
 
-        // Função principal que troca a foto (agora aceita 'frente' ou 'tras')
+        // 4. NOVA FUNÇÃO: Fazer o navegador falar a letra
+        function falarLetra(letra) {
+            // Primeiro, cancela qualquer fala anterior para as vozes não se atropelarem
+            window.speechSynthesis.cancel();
+
+            // Cria a "mensagem" com a letra que deve ser falada
+            let fala = new SpeechSynthesisUtterance(letra);
+            
+            // Define o idioma para Português do Brasil
+            fala.lang = 'pt-BR';
+            
+            // Você pode alterar o tom (pitch) e a velocidade (rate). 
+            // rate: 1 é o normal. Menor que 1 fica mais lento, maior que 1 mais rápido.
+            fala.rate = 1; 
+
+            // Dá o comando para o navegador falar
+            window.speechSynthesis.speak(fala);
+        }
+
         function mudarFoto(direcao) {
-            if (estaTrocando) return; // Se já estiver no meio do fade, ignora o novo clique
+            if (estaTrocando) return; 
             estaTrocando = true;
 
-            // 1. Apaga a foto
             imagem.style.opacity = 0;
 
             setTimeout(() => {
-                // 2. Calcula qual é a próxima foto (avança ou volta)
+                // Navegação (frente ou trás)
                 if (direcao === 'frente') {
                     fotoAtual++;
                     if (fotoAtual > totalDeFotos) fotoAtual = 1;
@@ -120,21 +143,25 @@
                     if (fotoAtual < 1) fotoAtual = totalDeFotos;
                 }
 
-                // 3. Atualiza o texto (Ex: 65 em código de caracteres é 'A', 66 é 'B')
-                // Como nossa foto 1 é A, fazemos 64 + 1 = 65 ('A')
+                // Descobre a letra (64 + 1 = 65, que é o código da letra 'A')
                 const nomeDaLetra = String.fromCharCode(64 + fotoAtual);
-                textoLetra.innerText = `Letra ${nomeDaLetra} (${fotoAtual} / 26)`;
+                
+                // Atualiza o texto mantendo o ícone de som
+                textoLetra.innerHTML = `<span class="icone-som">🔊</span> Letra ${nomeDaLetra} (${fotoAtual} / 26)`;
 
-                // 4. Quando a imagem nova carregar, acende a tela
+                // Quando a imagem carregar
                 imagem.onload = () => {
                     imagem.style.opacity = 1;
-                    estaTrocando = false; // Libera para o usuário clicar de novo
+                    estaTrocando = false; 
+                    
+                    // CHAMA A FUNÇÃO DE VOZ no momento exato que a imagem aparece
+                    falarLetra(nomeDaLetra);
                 };
 
-                // 5. Troca o arquivo da foto
+                // Troca o arquivo da foto
                 imagem.src = `fotos/f${fotoAtual}.jpg`;
 
-                // 6. Preload: Puxa a próxima foto de forma invisível para o cache do navegador
+                // Preload da próxima foto
                 let proximaFoto = (fotoAtual % totalDeFotos) + 1;
                 let imgPreload = new Image();
                 imgPreload.src = `fotos/f${proximaFoto}.jpg`;
@@ -142,20 +169,23 @@
             }, 300);
         }
 
-        // Clicar na imagem vai para a frente
+        // Eventos de clique
         imagem.addEventListener('click', () => {
             mudarFoto('frente');
         });
 
-        // Usar as setas do teclado para ir para frente ou para trás
+        // Eventos de teclado
         document.addEventListener('keydown', (evento) => {
             if (evento.key === 'ArrowRight') {
-                mudarFoto('frente'); // Seta para direita
+                mudarFoto('frente'); 
             } else if (evento.key === 'ArrowLeft') {
-                mudarFoto('tras');   // Seta para esquerda
+                mudarFoto('tras');   
             }
         });
 
+        // Dica: A primeira foto ("A") não falará sozinha ao abrir o site, 
+        // pois os navegadores modernos bloqueiam áudio automático sem que 
+        // o usuário tenha clicado na tela pelo menos uma vez.
     </script>
 
 </body>
