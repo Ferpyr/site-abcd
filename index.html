@@ -6,7 +6,6 @@
     <title>Alfabeto</title>
     
     <style>
-        /* Reset básico de margens e preenchimentos */
         * {
             margin: 0;
             padding: 0;
@@ -16,18 +15,13 @@
         body, html {
             height: 100%;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            
-            /* Fundo azul escuro com um gradiente suave e moderno */
             background: linear-gradient(135deg, #061126 0%, #122b5e 100%);
             color: #ffffff;
-            
-            /* Flexbox para centralizar tudo na tela */
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Container principal */
         .container {
             display: flex;
             flex-direction: column;
@@ -35,54 +29,42 @@
             text-align: center;
         }
 
-        /* Estilo do Título - com um leve efeito de brilho */
         h1 {
             font-size: 3.5rem;
             text-transform: uppercase;
             letter-spacing: 4px;
             margin-bottom: 5px;
-            /* Efeito de cor e brilho no texto */
             color: #4facfe;
             text-shadow: 0px 4px 15px rgba(79, 172, 254, 0.4);
         }
 
-        /* Subtítulo indicativo */
         p.instrucao {
             font-size: 1rem;
-            color: #a0aec0; /* Cor cinza clarinho */
+            color: #a0aec0;
             margin-bottom: 25px;
             font-weight: 300;
             letter-spacing: 1px;
         }
 
-        /* Estilização da Foto */
         img {
             max-width: 85vw;
             max-height: 55vh;
-            object-fit: cover; /* Faz a imagem se ajustar perfeitamente dentro do espaço */
-            border-radius: 16px; /* Bordas mais arredondadas */
-            
-            /* Borda fina e semi-transparente e sombra marcante para destacar do fundo escuro */
+            object-fit: cover;
+            border-radius: 16px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.6), 0px 0px 20px rgba(79, 172, 254, 0.2);
-            
             cursor: pointer;
-            
-            /* Animações suaves para o clique e para passar o mouse */
             transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
         }
 
-        /* Efeito de "flutuar" ao passar o mouse por cima da foto */
         img:hover {
             transform: scale(1.03) translateY(-5px);
             box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.8), 0px 0px 30px rgba(79, 172, 254, 0.4);
         }
 
-        /* Efeito visual ao clicar na foto (ela dá uma leve diminuída) */
         img:active {
             transform: scale(0.98);
         }
-
     </style>
 </head>
 <body>
@@ -91,7 +73,6 @@
         <h1>Alfabeto</h1>
         <p class="instrucao">Clique na imagem para ver a próxima letra</p>
         
-        <!-- A imagem inicial que vai aparecer (f1.jpg) -->
         <img id="fotoAlfabeto" src="fotos/f1.jpg" alt="Letra do Alfabeto">
     </div>
 
@@ -101,10 +82,10 @@
         const totalDeFotos = 26; 
 
         imagem.addEventListener('click', () => {
-            // Cria um efeito de "piscar" (fade out)
+            // 1. Inicia o fade out (apaga a foto atual)
             imagem.style.opacity = 0;
 
-            // Espera 300 milissegundos (o tempo do fade out) para trocar a foto
+            // 2. Espera os exatos 300ms do CSS para a foto ficar invisível
             setTimeout(() => {
                 fotoAtual++;
 
@@ -112,11 +93,15 @@
                     fotoAtual = 1;
                 }
 
+                // 3. Função fundamental: SÓ acende a tela de novo quando a foto NOVA carregar
+                imagem.onload = () => {
+                    imagem.style.opacity = 1;
+                };
+
+                // 4. Troca a fonte da imagem (isso faz o navegador ir buscar a nova foto)
                 imagem.src = `fotos/f${fotoAtual}.jpg`;
                 
-                // Faz a nova foto aparecer suavemente (fade in)
-                imagem.style.opacity = 1;
-            }, 300); // Esse tempo deve ser igual ao tempo do "transition: opacity" no CSS
+            }, 300);
         });
     </script>
 
