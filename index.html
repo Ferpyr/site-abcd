@@ -6,7 +6,7 @@
     <title>Alfabeto</title>
     
     <style>
-        /* Remove as margens padrão do navegador e garante que a tela ocupe 100% da altura */
+        /* Reset básico de margens e preenchimentos */
         * {
             margin: 0;
             padding: 0;
@@ -15,77 +15,108 @@
 
         body, html {
             height: 100%;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa; /* Cor de fundo suave */
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             
-            /* Usando Flexbox para centralizar tudo na tela inteira */
+            /* Fundo azul escuro com um gradiente suave e moderno */
+            background: linear-gradient(135deg, #061126 0%, #122b5e 100%);
+            color: #ffffff;
+            
+            /* Flexbox para centralizar tudo na tela */
             display: flex;
-            justify-content: center; /* Centraliza horizontalmente */
-            align-items: center;     /* Centraliza verticalmente */
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Container para manter o título em cima e a foto embaixo */
+        /* Container principal */
         .container {
             display: flex;
-            flex-direction: column; /* Coloca os itens em coluna (um embaixo do outro) */
-            align-items: center;    /* Centraliza os itens dentro do container */
-            gap: 20px;              /* Espaço entre o título e a imagem */
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
+        /* Estilo do Título - com um leve efeito de brilho */
         h1 {
-            font-size: 3rem;
-            color: #333;
+            font-size: 3.5rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+            /* Efeito de cor e brilho no texto */
+            color: #4facfe;
+            text-shadow: 0px 4px 15px rgba(79, 172, 254, 0.4);
         }
 
-        /* Estilização da foto */
+        /* Subtítulo indicativo */
+        p.instrucao {
+            font-size: 1rem;
+            color: #a0aec0; /* Cor cinza clarinho */
+            margin-bottom: 25px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* Estilização da Foto */
         img {
-            max-width: 90vw; /* Limita a largura para caber no celular */
-            max-height: 60vh; /* Limita a altura para não criar barra de rolagem */
-            object-fit: contain;
-            border-radius: 12px;
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Sombreado bonito */
-            cursor: pointer; /* Muda o cursor para "mãozinha" indicando que é clicável */
-            transition: transform 0.2s ease-in-out;
+            max-width: 85vw;
+            max-height: 55vh;
+            object-fit: cover; /* Faz a imagem se ajustar perfeitamente dentro do espaço */
+            border-radius: 16px; /* Bordas mais arredondadas */
+            
+            /* Borda fina e semi-transparente e sombra marcante para destacar do fundo escuro */
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.6), 0px 0px 20px rgba(79, 172, 254, 0.2);
+            
+            cursor: pointer;
+            
+            /* Animações suaves para o clique e para passar o mouse */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
         }
 
-        /* Pequeno efeito ao passar o mouse por cima da imagem */
+        /* Efeito de "flutuar" ao passar o mouse por cima da foto */
         img:hover {
-            transform: scale(1.02);
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.8), 0px 0px 30px rgba(79, 172, 254, 0.4);
         }
+
+        /* Efeito visual ao clicar na foto (ela dá uma leve diminuída) */
+        img:active {
+            transform: scale(0.98);
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Alfabeto</h1>
+        <p class="instrucao">Clique na imagem para ver a próxima letra</p>
+        
         <!-- A imagem inicial que vai aparecer (f1.jpg) -->
         <img id="fotoAlfabeto" src="fotos/f1.jpg" alt="Letra do Alfabeto">
     </div>
 
     <script>
-        // Pega o elemento da imagem pelo seu ID
         const imagem = document.getElementById('fotoAlfabeto');
-        
-        // Variável de controle para saber qual é a foto atual
         let fotoAtual = 1;
-        
-        // Total de letras do alfabeto (26 fotos no total)
         const totalDeFotos = 26; 
 
-        // Adiciona um evento que detecta toda vez que a imagem for clicada
         imagem.addEventListener('click', () => {
-            // Aumenta o número da foto (+1)
-            fotoAtual++;
+            // Cria um efeito de "piscar" (fade out)
+            imagem.style.opacity = 0;
 
-            // Se o número da foto passar de 26, volta para a primeira foto (f1.jpg)
-            if (fotoAtual > totalDeFotos) {
-                fotoAtual = 1;
-            }
+            // Espera 300 milissegundos (o tempo do fade out) para trocar a foto
+            setTimeout(() => {
+                fotoAtual++;
 
-            // Altera o caminho (src) da imagem dinamicamente para carregar a próxima
-            imagem.src = `fotos/f${fotoAtual}.jpg`;
+                if (fotoAtual > totalDeFotos) {
+                    fotoAtual = 1;
+                }
+
+                imagem.src = `fotos/f${fotoAtual}.jpg`;
+                
+                // Faz a nova foto aparecer suavemente (fade in)
+                imagem.style.opacity = 1;
+            }, 300); // Esse tempo deve ser igual ao tempo do "transition: opacity" no CSS
         });
     </script>
 
